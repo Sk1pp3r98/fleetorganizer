@@ -3,7 +3,7 @@ import { drizzle } from "drizzle-orm/libsql";
 import { shipTypes, shipTypeRoles, shipInstances, users } from "../db/schema";
 import crypto from "node:crypto";
 
-const dbUrl = process.env.DB_URL;
+const dbUrl = process.env.DB_URL || "file:./data/fleetorganizer.db";
 const client = createClient({ url: dbUrl });
 const db = drizzle(client);
 
