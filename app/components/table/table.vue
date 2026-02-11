@@ -1,11 +1,10 @@
 <script setup lang="ts">
 import type { InferSelectModel } from 'drizzle-orm';
 import { shipInstances } from '~~/server/db/schema';
-import Row from './row.vue';
 
 type ShipInstances = InferSelectModel<typeof shipInstances>;
 
-defineProps<{ tableData?: ShipInstances[] }>();
+const props = defineProps<{ tableData?: ShipInstances[] }>();
 </script>
 
 <template>

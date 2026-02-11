@@ -4,7 +4,8 @@ import { shipInstances } from '~~/server/db/schema';
 
 type ShipInstances = InferSelectModel<typeof shipInstances>;
 
-defineProps<{ rowData?: ShipInstances }>();
+const props = defineProps<{ rowData?: ShipInstances }>();
+console.log(props.rowData);
 </script>
 <template>
     <div v-if="rowData">
