@@ -22,6 +22,7 @@
   },
   "devDependencies": {
     "drizzle-kit": "^0.31.9",
+    "openapi-typescript": "^7.13.0",
     "tsx": "^4.21.0"
   }
 }
