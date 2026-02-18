@@ -1,0 +1,10 @@
+* {
+    color: var(--color-white);
+}
+body {
+    background-color: var(--color-primary);
+}
+
+.container {
+    @apply mx-auto;
+}
