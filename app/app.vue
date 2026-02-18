@@ -1,3 +1,14 @@
+<script setup lang="ts">
+const route = useRoute()
+
+useHead(() => ({
+  titleTemplate: (titleChunk) => {
+    return titleChunk ? `${titleChunk} - FleetOrganiser` : 'FleetOrganiser'
+  },
+}))
+</script>
 <template>
-  <NuxtPage />
+  <NuxtLayout>
+    <NuxtPage/>
+  </NuxtLayout>
 </template>
