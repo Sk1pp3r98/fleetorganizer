@@ -3,13 +3,9 @@ const { data, error } = await useFetch("/api/db-test");
 </script>
 
 <template>
+  <Header />
   <div v-if="data" class="container mx-auto">
-  <header>
-    Header content
-  </header>
-    <Table :table-data="data.rows"/>
-  <footer>
-    Footer content
-  </footer>
+    <Table :table-data="data.rows" />
   </div>
+  <Footer />
 </template>
