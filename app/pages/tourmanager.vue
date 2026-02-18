@@ -2,6 +2,10 @@
 import { ref, watch, onMounted } from 'vue';
 import { useDateFormat } from '@vueuse/core';
 
+useHead({
+  title: 'Tourmanager',
+})
+
 const tours = ref([])
 const newTourName = ref('')
 const dateOptions = { day: 'numeric', month: 'long', year: 'numeric'};

@@ -3,6 +3,12 @@
 }
 body {
     background-color: var(--color-primary);
+
+    > #__nuxt {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column
+    }
 }
 
 .container {
