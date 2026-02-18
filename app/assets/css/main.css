@@ -1,7 +1,10 @@
 @import "tailwindcss";
 @theme {
-  --color-mint-500: oklch(0.72 0.11 178);
+  --color-primary: rgb(10, 29, 41);
+  --color-secondary: rgb(15, 44, 62);
 }
 body {
     background-color: rgb(10, 29, 41);
 }
+
+@import "./components/_index.css";
