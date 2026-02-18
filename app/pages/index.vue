@@ -9,4 +9,5 @@ const { data, error } = await useFetch("/api/db-test");
   <div v-if="data">
     <ShipsTable :table-data="data.rows" />
   </div>
+  <Footer />
 </template>
