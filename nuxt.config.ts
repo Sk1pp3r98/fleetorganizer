@@ -25,11 +25,9 @@ export default defineNuxtConfig({
     },
   ],
 
-  modules: [
-    ['@nuxtjs/google-fonts', {
-        families: {
-          Orbitron: true,
-        }
-    }],
-  ],
+  modules: [['@nuxtjs/google-fonts', {
+      families: {
+        Orbitron: true,
+      }
+  }], '@nuxt/image'],
 })
