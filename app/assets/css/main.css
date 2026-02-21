@@ -2,6 +2,7 @@
 @theme {
   --color-primary: rgb(10, 29, 41);
   --color-secondary: rgb(15, 44, 62);
+  --color-tertiary: rgb(255, 160, 0);
 }
 body {
     background-color: rgb(10, 29, 41);

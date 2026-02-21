@@ -1,3 +1,16 @@
 header {
     background-color: var(--color-secondary);
+
+    .navigation {
+        a {        
+            border-bottom: 1px solid transparent;
+            padding-top: 4px;
+            padding-bottom: 3px;
+            transition: 0.2s border;
+    
+            &.router-link-active {
+                border-bottom: 1px solid var(--color-tertiary);
+            }
+        }
+    }
 }
