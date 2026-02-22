@@ -29,5 +29,5 @@ export default defineNuxtConfig({
       families: {
         Orbitron: true,
       }
-  }], '@nuxt/image'],
+  }], '@nuxt/image', '@nuxt/ui'],
 })
