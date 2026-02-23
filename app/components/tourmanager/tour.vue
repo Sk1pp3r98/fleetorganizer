@@ -122,7 +122,7 @@ defineEmits(['deleteTour']);
         </div>
         <div class="item flex flex-col">
           <label for="commodity">Commodity</label>
-          <input name="commodity" v-model="newBuy.commodity" placeholder="Commodity" class="border p-1" />
+          <DropDownInputField name="commodity" :value="newBuy.commodity" placeholder="Commodity" @update="(newValue) => newBuy.commodity = newValue" class="border p-1"/>
         </div>
         <div class="item flex flex-col">
           <label for="price_scu">aUEC/SCU</label>
@@ -179,7 +179,7 @@ defineEmits(['deleteTour']);
         </div>
         <div class="item flex flex-col">
           <label for="commodity">Commodity</label>
-          <input name="commodity" v-model="newSell.commodity" placeholder="Commodity" class="border p-1" />
+          <DropDownInputField name="commodity" :value="newSell.commodity" placeholder="Commodity" @update="(newValue) => newSell.commodity = newValue" class="border p-1"/>
         </div>
         <div class="item flex flex-col">
           <label for="price_scu">aUEC/SCU</label>
