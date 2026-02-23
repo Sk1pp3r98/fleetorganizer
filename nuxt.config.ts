@@ -16,6 +16,8 @@ export default defineNuxtConfig({
   runtimeConfig: {
     dbUrl: process.env.DB_URL || "file:./data/fleetorganizer.db",
     sessionSecret: process.env.SESSION_SECRET || "change-me",
+    basicAuthUser: process.env.BASIC_AUTH_USER,
+    basicAuthPass: process.env.BASIC_AUTH_PASS,
   },
 
   components: [
