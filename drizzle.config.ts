@@ -4,5 +4,5 @@ export default {
   schema: "./server/db/schema.ts",
   out: "./server/db/migrations",
   dialect: "sqlite",
-  dbCredentials: { url: process.env.DB_URL || "file:./data/fleetorganizer.db" },
+  dbCredentials: { url: process.env.TURSO_DATABASE_URL },
 } satisfies Config;
