@@ -14,7 +14,7 @@ export default defineNuxtConfig({
   css: ['./app/assets/css/main.css'],
 
   runtimeConfig: {
-    dbUrl: process.env.DB_URL || "file:./data/fleetorganizer.db",
+    dbUrl: process.env.TURSO_DATABASE_URL || "file:./data/fleetorganizer.db",
     sessionSecret: process.env.SESSION_SECRET || "change-me",
     basicAuthUser: process.env.BASIC_AUTH_USER,
     basicAuthPass: process.env.BASIC_AUTH_PASS,

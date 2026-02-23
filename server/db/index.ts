@@ -7,6 +7,7 @@ export function getDb() {
   const config = useRuntimeConfig();
   const client = createClient({
     url: config.dbUrl,
+    authToken: process.env.TURSO_AUTH_TOKEN
   });
   return drizzle(client);
 }
