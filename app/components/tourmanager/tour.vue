@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { useDateFormat } from '@vueuse/core';
 import type { Tour, TradeEntry, CostEntry } from '~/utils/types/tour'
+import { watch } from 'vue';
 
 const props = defineProps<{ tour: Tour }>()
 
@@ -8,6 +9,7 @@ const emptyTrade = (): TradeEntry => ({
   location: '',
   commodity: '',
   price: 0,
+  totalPrice: 0,
   amount: 0
 })
 
@@ -21,21 +23,84 @@ const sellModal = ref<{
 
 const costModalOpen = ref(false);
 const sellModalOpen = ref(false);
-const renameOpen = ref(false);
 
 const newBuy = ref(emptyTrade());
 const newSell = ref(emptyTrade());
+const lastBuyEdited = ref<keyof Pick<TradeEntry, 'price' | 'amount' | 'totalPrice'> | null>(null);
+const lastSellEdited = ref<keyof Pick<TradeEntry, 'price' | 'amount' | 'totalPrice'> | null>(null);
+
+const isFiniteNumber = (value: number): boolean => Number.isFinite(value);
+
+const setIfChanged = (
+  trade: TradeEntry,
+  key: keyof Pick<TradeEntry, 'price' | 'amount' | 'totalPrice'>,
+  nextValue: number
+) => {
+  if (!isFiniteNumber(nextValue)) return;
+  if (Math.abs((trade[key] ?? 0) - nextValue) < 0.0001) return;
+  trade[key] = Number(nextValue.toFixed(2));
+}
+
+const syncTradeValues = (
+  trade: TradeEntry,
+  changed: keyof Pick<TradeEntry, 'price' | 'amount' | 'totalPrice'> | null
+) => {
+  if (!changed) return;
+
+  const price = Number(trade.price);
+  const amount = Number(trade.amount);
+  const totalPrice = Number(trade.totalPrice);
+  const hasPrice = isFiniteNumber(price) && price > 0;
+  const hasAmount = isFiniteNumber(amount) && amount > 0;
+  const hasTotal = isFiniteNumber(totalPrice) && totalPrice > 0;
+
+  if (changed === 'price') {
+    if (hasPrice && hasAmount) {
+      setIfChanged(trade, 'totalPrice', price * amount);
+    } else if (hasPrice && hasTotal) {
+      setIfChanged(trade, 'amount', totalPrice / price);
+    }
+    return;
+  }
+
+  if (changed === 'amount') {
+    if (hasPrice && hasAmount) {
+      setIfChanged(trade, 'totalPrice', price * amount);
+    } else if (hasAmount && hasTotal) {
+      setIfChanged(trade, 'price', totalPrice / amount);
+    }
+    return;
+  }
+
+  if (hasTotal && hasAmount) {
+    setIfChanged(trade, 'price', totalPrice / amount);
+  } else if (hasTotal && hasPrice) {
+    setIfChanged(trade, 'amount', totalPrice / price);
+  }
+}
+
+watch(
+  () => [newBuy.value.price, newBuy.value.amount, newBuy.value.totalPrice],
+  () => syncTradeValues(newBuy.value, lastBuyEdited.value)
+)
+
+watch(
+  () => [newSell.value.price, newSell.value.amount, newSell.value.totalPrice],
+  () => syncTradeValues(newSell.value, lastSellEdited.value)
+)
 
 const addBuy = () => {
   if (!newBuy.value.commodity || !newBuy.value.amount) return
   props.tour.buys.push({ ...newBuy.value })
   newBuy.value = emptyTrade()
+  lastBuyEdited.value = null
 }
 
 const addSell = () => {
   if (!newSell.value.commodity || !newSell.value.amount) return
   props.tour.sells.push({ ...newSell.value })
   newSell.value = emptyTrade()
+  lastSellEdited.value = null
 }
 
 const openSellModal = (commodity: string, amount: number) => {
@@ -95,6 +160,7 @@ const onboard = (): Record<string, number> => {
   return map
 }
 
+
 defineEmits(['deleteTour']);
 </script>
 
@@ -118,23 +184,31 @@ defineEmits(['deleteTour']);
       <form class="flex gap-2 mb-2" @submit.prevent="addBuy()">
         <div class="item flex flex-col">
           <label for="location">Location</label>
-          <input name="location" v-model="newBuy.location" placeholder="Location" class="border p-1" />
+          <input name="location" v-model="newBuy.location" placeholder="Location" class="border p-1" size="10"/>
         </div>
         <div class="item flex flex-col">
           <label for="commodity">Commodity</label>
-          <DropDownInputField name="commodity" :value="newBuy.commodity" placeholder="Commodity" @update="(newValue) => newBuy.commodity = newValue" class="border p-1"/>
-        </div>
-        <div class="item flex flex-col">
-          <label for="price_scu">aUEC/SCU</label>
-          <input name="price_scu" v-model.number="newBuy.price" placeholder="Price / SCU" type="number"
-            class="border p-1 w-28" />
+          <DropDownInputField name="commodity" :value="newBuy.commodity" placeholder="Commodity" @update="(newValue) => newBuy.commodity = newValue" class="border p-1 max-w-34"/>
         </div>
         <div class="item flex flex-col">
           <label for="scu_amount">SCUs</label>
           <input name="scu_amount" v-model.number="newBuy.amount" placeholder="SCUs" type="number"
+            @input="lastBuyEdited = 'amount'"
             class="border p-1 w-20" />
         </div>
-        <button @click="addBuy()" class="border px-2 min-w-20">+</button>
+        <div class="item flex flex-col">
+          <label for="price_scu">aUEC/SCU</label>
+          <input name="price_scu" v-model.number="newBuy.price" placeholder="Price / SCU" type="number"
+            @input="lastBuyEdited = 'price'"
+            class="border p-1 w-28" />
+        </div>
+        <div class="item flex flex-col">
+          <label for="price_scu">aUEC Total</label>
+          <input name="price_scu" v-model.number="newBuy.totalPrice" placeholder="Price / SCU" type="number"
+            @input="lastBuyEdited = 'totalPrice'"
+            class="border p-1 w-28" />
+        </div>
+        <button @click="addBuy()" class="border px-2 min-w-20 ml-auto">+</button>
       </form>
 
       <table class="w-full border text-sm">
@@ -175,23 +249,31 @@ defineEmits(['deleteTour']);
       <form class="flex gap-2 mb-2" @submit.prevent="addSell()">
         <div class="item flex flex-col">
           <label for="location">Location</label>
-          <input name="location" v-model="newSell.location" placeholder="Location" class="border p-1" />
+          <input name="location" v-model="newSell.location" placeholder="Location" class="border p-1" size="10" />
         </div>
         <div class="item flex flex-col">
           <label for="commodity">Commodity</label>
-          <DropDownInputField name="commodity" :value="newSell.commodity" placeholder="Commodity" @update="(newValue) => newSell.commodity = newValue" class="border p-1"/>
-        </div>
-        <div class="item flex flex-col">
-          <label for="price_scu">aUEC/SCU</label>
-          <input name="price_scu" v-model.number="newSell.price" placeholder="aUEC/SCU" type="number"
-            class="border p-1 w-28" />
+          <DropDownInputField name="commodity" :value="newSell.commodity" placeholder="Commodity" @update="(newValue) => newSell.commodity = newValue" class="border p-1 max-w-34"/>
         </div>
         <div class="item flex flex-col">
           <label for="scu_amount">SCUs</label>
           <input name="scu_amount" v-model.number="newSell.amount" placeholder="SCUs" type="number"
+            @input="lastSellEdited = 'amount'"
             class="border p-1 w-20" />
         </div>
-        <button @click="addSell()" class="border px-2 min-w-20">+</button>
+        <div class="item flex flex-col">
+          <label for="price_scu">aUEC/SCU</label>
+          <input name="price_scu" v-model.number="newSell.price" placeholder="aUEC/SCU" type="number"
+            @input="lastSellEdited = 'price'"
+            class="border p-1 w-28" />
+        </div>
+        <div class="item flex flex-col">
+          <label for="price_scu">aUEC Total</label>
+          <input name="price_scu" v-model.number="newSell.totalPrice" placeholder="aUEC Total" type="number"
+            @input="lastSellEdited = 'totalPrice'"
+            class="border p-1 w-28" />
+        </div>
+        <button @click="addSell()" class="border px-2 min-w-20 ml-auto">+</button>
       </form>
 
       <table class="w-full border text-sm">

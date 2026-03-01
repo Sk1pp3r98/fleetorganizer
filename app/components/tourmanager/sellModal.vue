@@ -12,6 +12,7 @@ const newSell = (): TradeEntry => ({
   location: '',
   commodity: props.commodity ?? '',
   amount: props.amount ?? 0,
+  totalPrice: 0,
   price: 0
 })
 

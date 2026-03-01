@@ -25,7 +25,7 @@ const handleUpdate = () => {
 </script>
 
 <template>
-  <USelectMenu :name="name" :placeholder="placeholder" v-model="selectValue"
+  <USelectMenu :id="name" :placeholder="placeholder" v-model="selectValue"
     @change="handleUpdate()" create-item :items="items" size="xl" class="w-48" @create="onCreate" />
 </template>
 

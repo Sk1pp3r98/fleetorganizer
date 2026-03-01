@@ -2,6 +2,7 @@ export interface TradeEntry {
   location: string
   commodity: string
   price: number
+  totalPrice: number
   amount: number
 }
 
