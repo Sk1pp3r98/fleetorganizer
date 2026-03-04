@@ -11,7 +11,7 @@ const { data: commodityData } = await useFetch<GetCommoditiesOkResponse>('https:
   method: 'GET',
 })
 
-const { data: terminalsData } = await useFetch<GetTerminalsOkResponse>('https://api.uexcorp.uk/2.0/terminals?type=commodity', {
+const { data: terminalsData } = await useFetch<GetTerminalsOkResponse>('https://api.uexcorp.uk/2.0/terminals', {
   method: 'GET',
 })
 
