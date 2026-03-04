@@ -311,7 +311,7 @@ defineEmits(['deleteTour']);
 <div class="flex justify-between items-center">
   <div class="flex flex-row gap-2 items-center">
     <h2 class="text-lg font-bold hover:cursor-pointer">
-      <EditableField :value="tour.name" @change="(e) => tour.name = e" type="string" />
+      <EditableField :value="tour.name" @change="(e) => tour.name = e" size="undefined" type="string" />
     </h2>
 
     <h3 class="text-lg font-bold">{{ useDateFormat(tour.id, 'DD.MM.YYYY') }}</h3>
@@ -327,43 +327,30 @@ defineEmits(['deleteTour']);
       <form class="flex gap-2 mb-2" @submit.prevent="addBuy()">
         <div class="item flex flex-col">
           <label for="location">Location</label>
-          <DropDownInputField
-            name="buy-location"
-            :dropdown-value="newBuy.location"
-            :options="locationOptions"
-            placeholder="Location"
-            @update="(newValue) => newBuy.location = newValue || ''"
-            class="border p-1 max-w-34 h-9"
-          />
+          <DropDownInputField name="buy-location" :dropdown-value="newBuy.location" :options="locationOptions"
+            placeholder="Location" @update="(newValue) => newBuy.location = newValue || ''"
+            class="border p-1 max-w-34 h-9" />
         </div>
         <div class="item flex flex-col">
           <label for="commodity">Commodity</label>
-          <DropDownInputField
-            name="buy-commodity"
-            :dropdown-value="newBuy.commodity"
-            :options="buyCommodityOptions"
-            placeholder="Commodity"
-            @update="(newValue) => newBuy.commodity = newValue || ''"
-            class="border p-1 max-w-34 h-9"
-          />
+          <DropDownInputField name="buy-commodity" :dropdown-value="newBuy.commodity" :options="buyCommodityOptions"
+            placeholder="Commodity" @update="(newValue) => newBuy.commodity = newValue || ''"
+            class="border p-1 max-w-34 h-9" />
         </div>
         <div class="item flex flex-col">
           <label for="scu_amount">SCUs</label>
           <input name="scu_amount" v-model.number="newBuy.amount" placeholder="SCUs" type="number"
-            @input="lastBuyEdited = 'amount'"
-            class="border p-1 w-20 h-9" />
+            @input="lastBuyEdited = 'amount'" class="border p-1 w-20 h-9" />
         </div>
         <div class="item flex flex-col">
           <label for="price_scu">aUEC/SCU</label>
           <input name="price_scu" v-model.number="newBuy.price" placeholder="Price / SCU" type="number" step="0.01"
-            @input="lastBuyEdited = 'price'"
-            class="border p-1 w-28 h-9" />
+            @input="lastBuyEdited = 'price'" class="border p-1 w-28 h-9" />
         </div>
         <div class="item flex flex-col">
           <label for="price_scu">aUEC Total</label>
           <input name="price_scu" v-model.number="newBuy.totalPrice" placeholder="Price / SCU" type="number" step="0.01"
-            @input="lastBuyEdited = 'totalPrice'"
-            class="border p-1 w-28 h-9" />
+            @input="lastBuyEdited = 'totalPrice'" class="border p-1 w-28 h-9" />
         </div>
         <button @click="addBuy()" class="border px-2 min-w-20 ml-auto">+</button>
       </form>
@@ -406,43 +393,30 @@ defineEmits(['deleteTour']);
       <form class="flex gap-2 mb-2" @submit.prevent="addSell()">
         <div class="item flex flex-col">
           <label for="location">Location</label>
-          <DropDownInputField
-            name="sell-location"
-            :dropdown-value="newSell.location"
-            :options="locationOptions"
-            placeholder="Location"
-            @update="(newValue) => newSell.location = newValue || ''"
-            class="border p-1 max-w-34 h-9"
-          />
+          <DropDownInputField name="sell-location" :dropdown-value="newSell.location" :options="locationOptions"
+            placeholder="Location" @update="(newValue) => newSell.location = newValue || ''"
+            class="border p-1 max-w-34 h-9" />
         </div>
         <div class="item flex flex-col">
           <label for="commodity">Commodity</label>
-          <DropDownInputField
-            name="sell-commodity"
-            :dropdown-value="newSell.commodity"
-            :options="sellCommodityOptions"
-            placeholder="Commodity"
-            @update="(newValue) => newSell.commodity = newValue || ''"
-            class="border p-1 max-w-34 h-9"
-          />
+          <DropDownInputField name="sell-commodity" :dropdown-value="newSell.commodity" :options="sellCommodityOptions"
+            placeholder="Commodity" @update="(newValue) => newSell.commodity = newValue || ''"
+            class="border p-1 max-w-34 h-9" />
         </div>
         <div class="item flex flex-col">
           <label for="scu_amount">SCUs</label>
           <input name="scu_amount" v-model.number="newSell.amount" placeholder="SCUs" type="number"
-            @input="lastSellEdited = 'amount'"
-            class="border p-1 w-20 h-9" />
+            @input="lastSellEdited = 'amount'" class="border p-1 w-20 h-9" />
         </div>
         <div class="item flex flex-col">
           <label for="price_scu">aUEC/SCU</label>
           <input name="price_scu" v-model.number="newSell.price" placeholder="aUEC/SCU" type="number" step="0.01"
-            @input="lastSellEdited = 'price'"
-            class="border p-1 w-28 h-9" />
+            @input="lastSellEdited = 'price'" class="border p-1 w-28 h-9" />
         </div>
         <div class="item flex flex-col">
           <label for="price_scu">aUEC Total</label>
           <input name="price_scu" v-model.number="newSell.totalPrice" placeholder="aUEC Total" type="number" step="0.01"
-            @input="lastSellEdited = 'totalPrice'"
-            class="border p-1 w-28 h-9" />
+            @input="lastSellEdited = 'totalPrice'" class="border p-1 w-28 h-9" />
         </div>
         <button @click="addSell()" class="border px-2 min-w-20 ml-auto">+</button>
       </form>
@@ -511,22 +485,25 @@ defineEmits(['deleteTour']);
     </table>
   </div>
 
-  <div class="border-y my-4 py-4 flex flex-row justify-between">
-    <div class="">
-      <div class="font-semibold">On Board</div>
-      <div v-for="(amount, commodity) in onboard()" :key="commodity" class="flex gap-2 items-center">
-        <template v-if="amount > 0">
-          <span>{{ commodity }}: {{ amount }} SCU</span>
-          <button class="border px-2" @click="openSellModal(commodity, amount)">
-            Sell
-          </button>
-        </template>
-        <template v-else>
-          <span>{{ commodity }} sold</span>
-        </template>
-      </div>
+  <div class="border-y my-4 py-4 flex flex-row justify-between items-center">
+    <div class="flex flex-col gap-2">
+      <div class="font-semibold border-dotted border-b-1">On Board</div>
+      <template v-for="(amount, commodity, index) in onboard()" :key="commodity">
+        <hr v-if="index > 0" />
+        <div class="flex gap-2 items-center">
+          <template v-if="amount > 0">
+            <span>{{ commodity }}: {{ amount }} SCU</span>
+            <button class="border px-2" @click="openSellModal(commodity, amount)">
+              Sell
+            </button>
+          </template>
+          <template v-else>
+            <span>{{ commodity }} sold</span>
+          </template>
+        </div>
+      </template>
     </div>
-    <button class="border px-2" @click="costModalOpen = true">
+    <button class="border p-2" @click="costModalOpen = true">
       Add additional cost
     </button>
   </div>

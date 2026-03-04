@@ -1,7 +1,8 @@
 <script setup lang="ts">
 const props = defineProps<{
   value: string | number,
-  type: 'string' | 'number'
+  type: 'string' | 'number',
+  size?: string,
 }>();
 
 const emit = defineEmits(['change']);
@@ -32,8 +33,8 @@ const handleSubmit = (value: string) => {
     @keyup.enter="handleSubmit(($event?.target as HTMLInputElement).value)"
     @blur="handleSubmit(($event?.target as HTMLInputElement).value)"
     :type="type === 'number' ? 'number' : undefined"
-    class="border w-full"
-    size="10"
+    class="border w-full field-sizing-content"
+    :size="size ?? 10"
     />
 </template>
 
