@@ -1,0 +1,607 @@
+openapi: 3.0.3
+info:
+  title: UEX API
+  version: "1.0.0"
+servers:
+  - url: https://api.uexcorp.space/2.0
+    description: UEX Production
+paths:
+  /commodities:
+    get:
+      summary: Get commodities
+      operationId: getCommodities
+      tags:
+        - Commodities
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GetCommoditiesOkResponse"
+  /terminals:
+    get:
+      summary: Get terminals
+      operationId: getTerminals
+      tags:
+        - Terminals
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GetTerminalsOkResponse"
+  /commodities_prices/id_terminal/{id_terminal}:
+    get:
+      summary: Get commodity prices by terminal
+      operationId: getCommoditiesPricesByTerminal
+      tags:
+        - CommodityPrices
+      parameters:
+        - name: id_terminal
+          in: path
+          required: true
+          schema:
+            type: number
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GetCommoditiesPricesByTerminalOkResponse"
+components:
+  schemas:
+    GetCommoditiesOkResponse:
+      type: object
+      required:
+        - data
+        - http_code
+        - message
+        - status
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/Commodity"
+        http_code:
+          type: number
+        message:
+          type: string
+        status:
+          type: string
+
+    Commodity:
+      type: object
+      required:
+        - code
+        - date_added
+        - date_modified
+        - id
+        - id_parent
+        - is_available
+        - is_available_live
+        - is_buggy
+        - is_buyable
+        - is_explosive
+        - is_extractable
+        - is_fuel
+        - is_harvestable
+        - is_illegal
+        - is_inert
+        - is_mineral
+        - is_raw
+        - is_refinable
+        - is_refined
+        - is_sellable
+        - is_temporary
+        - is_visible
+        - is_volatile_qt
+        - is_volatile_time
+        - kind
+        - name
+        - price_buy
+        - price_sell
+        - weight_scu
+        - wiki
+      properties:
+        code:
+          type: string
+        date_added:
+          type: number
+        date_modified:
+          type: number
+        id:
+          type: number
+        id_parent:
+          type: number
+        is_available:
+          type: number
+        is_available_live:
+          type: number
+        is_buggy:
+          type: number
+        is_buyable:
+          type: number
+        is_explosive:
+          type: number
+        is_extractable:
+          type: number
+        is_fuel:
+          type: number
+        is_harvestable:
+          type: number
+        is_illegal:
+          type: number
+        is_inert:
+          type: number
+        is_mineral:
+          type: number
+        is_raw:
+          type: number
+        is_refinable:
+          type: number
+        is_refined:
+          type: number
+        is_sellable:
+          type: number
+        is_temporary:
+          type: number
+        is_visible:
+          type: number
+        is_volatile_qt:
+          type: number
+        is_volatile_time:
+          type: number
+        kind:
+          type: string
+        name:
+          type: string
+        price_buy:
+          type: number
+        price_sell:
+          type: number
+        weight_scu:
+          type: number
+        wiki:
+          type: string
+
+    GetTerminalsOkResponse:
+      type: object
+      required:
+        - data
+        - http_code
+        - message
+        - status
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/Terminal"
+        http_code:
+          type: number
+        message:
+          type: string
+        status:
+          type: string
+
+    Terminal:
+      type: object
+      required:
+        - city_name
+        - code
+        - company_name
+        - contact_url
+        - date_added
+        - date_modified
+        - faction_name
+        - has_docking_port
+        - has_freight_elevator
+        - has_loading_dock
+        - id
+        - id_city
+        - id_company
+        - id_faction
+        - id_moon
+        - id_orbit
+        - id_outpost
+        - id_planet
+        - id_poi
+        - id_space_station
+        - id_star_system
+        - is_affinity_influenceable
+        - is_auto_load
+        - is_available
+        - is_available_live
+        - is_cargo_center
+        - is_default_system
+        - is_food
+        - is_habitation
+        - is_jump_point
+        - is_medical
+        - is_nqa
+        - is_player_owned
+        - is_refinery
+        - is_refuel
+        - is_repair
+        - is_shop_fps
+        - is_shop_vehicle
+        - is_visible
+        - max_container_size
+        - mcs
+        - moon_name
+        - name
+        - nickname
+        - displayname
+        - fullname
+        - orbit_name
+        - outpost_name
+        - planet_name
+        - space_station_name
+        - star_system_name
+        - type
+      properties:
+        city_name:
+          type: string
+          nullable: true
+        code:
+          type: string
+        company_name:
+          type: string
+        contact_url:
+          type: string
+          nullable: true
+        date_added:
+          type: number
+        date_modified:
+          type: number
+        faction_name:
+          type: string
+        has_docking_port:
+          type: number
+        has_freight_elevator:
+          type: number
+        has_loading_dock:
+          type: number
+        id:
+          type: number
+        id_city:
+          type: number
+        id_company:
+          type: number
+        id_faction:
+          type: number
+        id_moon:
+          type: number
+        id_orbit:
+          type: number
+        id_outpost:
+          type: number
+        id_planet:
+          type: number
+        id_poi:
+          type: number
+        id_space_station:
+          type: number
+        id_star_system:
+          type: number
+        is_affinity_influenceable:
+          type: number
+        is_auto_load:
+          type: number
+        is_available:
+          type: number
+        is_available_live:
+          type: number
+        is_cargo_center:
+          type: number
+        is_default_system:
+          type: number
+        is_food:
+          type: number
+        is_habitation:
+          type: number
+        is_jump_point:
+          type: number
+        is_medical:
+          type: number
+        is_nqa:
+          type: number
+        is_player_owned:
+          type: number
+        is_refinery:
+          type: number
+        is_refuel:
+          type: number
+        is_repair:
+          type: number
+        is_shop_fps:
+          type: number
+        is_shop_vehicle:
+          type: number
+        is_visible:
+          type: number
+        max_container_size:
+          type: number
+        mcs:
+          type: number
+        moon_name:
+          type: string
+          nullable: true
+        name:
+          type: string
+        nickname:
+          type: string
+        displayname:
+          type: string
+        fullname:
+          type: string
+        orbit_name:
+          type: string
+        outpost_name:
+          type: string
+          nullable: true
+        planet_name:
+          type: string
+        space_station_name:
+          type: string
+          nullable: true
+        star_system_name:
+          type: string
+        type:
+          type: string
+
+    GetCommoditiesPricesByTerminalOkResponse:
+      type: object
+      required:
+        - data
+        - http_code
+        - message
+        - status
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/CommodityPriceByTerminal"
+        http_code:
+          type: number
+        message:
+          type: string
+        status:
+          type: string
+
+    CommodityPriceByTerminal:
+      type: object
+      required:
+        - city_name
+        - commodity_code
+        - commodity_name
+        - commodity_slug
+        - container_sizes
+        - date_added
+        - date_modified
+        - faction_affinity
+        - faction_name
+        - game_version
+        - id
+        - id_city
+        - id_commodity
+        - id_faction
+        - id_moon
+        - id_orbit
+        - id_outpost
+        - id_planet
+        - id_poi
+        - id_star_system
+        - id_terminal
+        - moon_name
+        - orbit_name
+        - outpost_name
+        - planet_name
+        - poi_name
+        - price_buy
+        - price_buy_avg
+        - price_buy_avg_month
+        - price_buy_avg_week
+        - price_buy_max
+        - price_buy_max_month
+        - price_buy_max_week
+        - price_buy_min
+        - price_buy_min_month
+        - price_buy_min_week
+        - price_buy_users
+        - price_buy_users_rows
+        - price_sell
+        - price_sell_avg
+        - price_sell_avg_month
+        - price_sell_avg_week
+        - price_sell_max
+        - price_sell_max_month
+        - price_sell_max_week
+        - price_sell_min
+        - price_sell_min_month
+        - price_sell_min_week
+        - price_sell_users
+        - price_sell_users_rows
+        - scu_buy
+        - scu_buy_avg
+        - scu_buy_avg_month
+        - scu_buy_avg_week
+        - scu_buy_max
+        - scu_buy_max_month
+        - scu_buy_max_week
+        - scu_buy_min
+        - scu_buy_min_month
+        - scu_buy_min_week
+        - scu_buy_users
+        - scu_buy_users_rows
+        - scu_sell
+        - scu_sell_avg
+        - scu_sell_avg_month
+        - scu_sell_avg_week
+        - scu_sell_max
+        - scu_sell_max_month
+        - scu_sell_max_week
+        - scu_sell_min
+        - scu_sell_min_month
+        - scu_sell_min_week
+        - scu_sell_stock
+        - scu_sell_stock_avg
+        - scu_sell_stock_avg_month
+        - scu_sell_stock_avg_week
+        - scu_sell_users
+        - scu_sell_users_rows
+        - space_station_name
+        - star_system_name
+        - status_buy
+        - status_buy_avg
+        - status_buy_avg_month
+        - status_buy_avg_week
+        - status_buy_max
+        - status_buy_max_month
+        - status_buy_max_week
+        - status_buy_min
+        - status_buy_min_month
+        - status_buy_min_week
+        - status_sell
+        - status_sell_avg
+        - status_sell_avg_month
+        - status_sell_avg_week
+        - status_sell_max
+        - status_sell_max_month
+        - status_sell_max_week
+        - status_sell_min
+        - status_sell_min_month
+        - status_sell_min_week
+        - terminal_code
+        - terminal_is_player_owned
+        - terminal_mcs
+        - terminal_name
+        - terminal_slug
+        - volatility_buy
+        - volatility_price_buy
+        - volatility_price_sell
+        - volatility_scu_buy
+        - volatility_scu_sell
+        - volatility_sell
+      properties:
+        city_name: { type: string }
+        commodity_code: { type: string }
+        commodity_name: { type: string }
+        commodity_slug: { type: string }
+        container_sizes: { type: string }
+        date_added: { type: number }
+        date_modified: { type: number }
+        faction_affinity: { type: number }
+        faction_name: { type: string }
+        game_version: { type: string }
+        id: { type: number }
+        id_city: { type: number }
+        id_commodity: { type: number }
+        id_faction: { type: number }
+        id_moon: { type: number }
+        id_orbit: { type: number }
+        id_outpost: { type: number }
+        id_planet: { type: number }
+        id_poi: { type: number }
+        id_star_system: { type: number }
+        id_terminal: { type: number }
+        moon_name:
+          type: object
+          nullable: true
+        orbit_name: { type: string }
+        outpost_name:
+          type: object
+          nullable: true
+        planet_name: { type: string }
+        poi_name:
+          type: object
+          nullable: true
+        price_buy: { type: number }
+        price_buy_avg: { type: number }
+        price_buy_avg_month: { type: number }
+        price_buy_avg_week: { type: number }
+        price_buy_max: { type: number }
+        price_buy_max_month: { type: number }
+        price_buy_max_week: { type: number }
+        price_buy_min: { type: number }
+        price_buy_min_month: { type: number }
+        price_buy_min_week: { type: number }
+        price_buy_users: { type: number }
+        price_buy_users_rows: { type: number }
+        price_sell: { type: number }
+        price_sell_avg: { type: number }
+        price_sell_avg_month: { type: number }
+        price_sell_avg_week: { type: number }
+        price_sell_max: { type: number }
+        price_sell_max_month: { type: number }
+        price_sell_max_week: { type: number }
+        price_sell_min: { type: number }
+        price_sell_min_month: { type: number }
+        price_sell_min_week: { type: number }
+        price_sell_users: { type: number }
+        price_sell_users_rows: { type: number }
+        scu_buy: { type: number }
+        scu_buy_avg: { type: number }
+        scu_buy_avg_month: { type: number }
+        scu_buy_avg_week: { type: number }
+        scu_buy_max: { type: number }
+        scu_buy_max_month: { type: number }
+        scu_buy_max_week: { type: number }
+        scu_buy_min: { type: number }
+        scu_buy_min_month: { type: number }
+        scu_buy_min_week: { type: number }
+        scu_buy_users: { type: number }
+        scu_buy_users_rows: { type: number }
+        scu_sell: { type: number }
+        scu_sell_avg: { type: number }
+        scu_sell_avg_month: { type: number }
+        scu_sell_avg_week: { type: number }
+        scu_sell_max: { type: number }
+        scu_sell_max_month: { type: number }
+        scu_sell_max_week: { type: number }
+        scu_sell_min: { type: number }
+        scu_sell_min_month: { type: number }
+        scu_sell_min_week: { type: number }
+        scu_sell_stock: { type: number }
+        scu_sell_stock_avg: { type: number }
+        scu_sell_stock_avg_month: { type: number }
+        scu_sell_stock_avg_week: { type: number }
+        scu_sell_users: { type: number }
+        scu_sell_users_rows: { type: number }
+        space_station_name:
+          type: object
+          nullable: true
+        star_system_name: { type: string }
+        status_buy: { type: number }
+        status_buy_avg: { type: number }
+        status_buy_avg_month: { type: number }
+        status_buy_avg_week: { type: number }
+        status_buy_max: { type: number }
+        status_buy_max_month: { type: number }
+        status_buy_max_week: { type: number }
+        status_buy_min: { type: number }
+        status_buy_min_month: { type: number }
+        status_buy_min_week: { type: number }
+        status_sell: { type: number }
+        status_sell_avg: { type: number }
+        status_sell_avg_month: { type: number }
+        status_sell_avg_week: { type: number }
+        status_sell_max: { type: number }
+        status_sell_max_month: { type: number }
+        status_sell_max_week: { type: number }
+        status_sell_min: { type: number }
+        status_sell_min_month: { type: number }
+        status_sell_min_week: { type: number }
+        terminal_code: { type: string }
+        terminal_is_player_owned: { type: number }
+        terminal_mcs: { type: number }
+        terminal_name: { type: string }
+        terminal_slug: { type: string }
+        volatility_buy: { type: number }
+        volatility_price_buy: { type: number }
+        volatility_price_sell: { type: number }
+        volatility_scu_buy: { type: number }
+        volatility_scu_sell: { type: number }
+        volatility_sell: { type: number }
