@@ -1,9 +1,16 @@
 <script setup lang="ts">
 import { useDateFormat } from '@vueuse/core';
 import type { Tour, TradeEntry, CostEntry } from '~/utils/types/tour'
-import { watch } from 'vue';
+import type {
+  GetCommoditiesPricesByTerminalOkResponse,
+  UexCommodity,
+  UexCommodityPriceByTerminal,
+  UexTerminal,
+} from '~/utils/types/uex';
 
 const props = defineProps<{ tour: Tour }>()
+const commodities = inject('commodities', ref<UexCommodity[]>([]))
+const terminals = inject('terminals', ref<UexTerminal[]>([]))
 
 const emptyTrade = (): TradeEntry => ({
   location: '',
@@ -28,6 +35,112 @@ const newBuy = ref(emptyTrade());
 const newSell = ref(emptyTrade());
 const lastBuyEdited = ref<keyof Pick<TradeEntry, 'price' | 'amount' | 'totalPrice'> | null>(null);
 const lastSellEdited = ref<keyof Pick<TradeEntry, 'price' | 'amount' | 'totalPrice'> | null>(null);
+const terminalPriceCache = ref(new Map<number, UexCommodityPriceByTerminal[]>())
+const buyCommodityTerminals = ref<UexCommodityPriceByTerminal[]>([])
+const sellCommodityTerminals = ref<UexCommodityPriceByTerminal[]>([])
+
+const allCommodityOptions = computed(() => {
+  return [...new Map(
+    commodities.value.map((item) => [
+      item.code,
+      { label: `${item.code} | ${item.name}`, value: item.code },
+    ])
+  ).values()]
+})
+
+const locationOptions = computed(() => {
+  return [...new Map(
+    terminals.value.map((item) => [
+      item.code,
+      { label: `${item.nickname} | ${item.displayname}`, value: item.nickname },
+    ])
+  ).values()]
+})
+
+const resolveTerminalByLocation = (location: string) => {
+  const normalized = location.trim().toLowerCase()
+  if (!normalized) return undefined
+
+  return terminals.value.find((terminal) => {
+    const candidates = [
+      terminal.nickname,
+      terminal.code,
+      terminal.name,
+      terminal.displayname,
+      terminal.fullname,
+    ].filter(Boolean)
+
+    return candidates.some((candidate) => candidate.toLowerCase() === normalized)
+  })
+}
+
+const buyTerminalId = computed(() => resolveTerminalByLocation(newBuy.value.location)?.id ?? null)
+const sellTerminalId = computed(() => resolveTerminalByLocation(newSell.value.location)?.id ?? null)
+
+const fetchTerminalPrices = async (terminalId: number): Promise<UexCommodityPriceByTerminal[]> => {
+  const cached = terminalPriceCache.value.get(terminalId)
+  if (cached) return cached
+
+  try {
+    const response = await $fetch<GetCommoditiesPricesByTerminalOkResponse>(
+      `https://api.uexcorp.uk/2.0/commodities_prices/id_terminal/${terminalId}`,
+      { method: 'GET' }
+    )
+    const rows = response?.data ?? []
+    terminalPriceCache.value.set(terminalId, rows)
+    return rows
+  } catch {
+    return []
+  }
+}
+
+watch(
+  buyTerminalId,
+  async (terminalId) => {
+    if (!terminalId) {
+      buyCommodityTerminals.value = []
+      return
+    }
+    buyCommodityTerminals.value = await fetchTerminalPrices(terminalId)
+  },
+  { immediate: true }
+)
+
+watch(
+  sellTerminalId,
+  async (terminalId) => {
+    if (!terminalId) {
+      sellCommodityTerminals.value = []
+      return
+    }
+    sellCommodityTerminals.value = await fetchTerminalPrices(terminalId)
+  },
+  { immediate: true }
+)
+
+const buyCommodityOptions = computed(() => {
+  if (!buyTerminalId.value) return allCommodityOptions.value
+
+  const buyableCodes = new Set(
+    buyCommodityTerminals.value
+      .filter((row) => row.price_buy > 0)
+      .map((row) => row.commodity_code)
+  )
+
+  return allCommodityOptions.value.filter((option) => buyableCodes.has(option.value))
+})
+
+const sellCommodityOptions = computed(() => {
+  if (!sellTerminalId.value) return allCommodityOptions.value
+
+  const sellableCodes = new Set(
+    sellCommodityTerminals.value
+      .filter((row) => row.price_sell > 0)
+      .map((row) => row.commodity_code)
+  )
+
+  return allCommodityOptions.value.filter((option) => sellableCodes.has(option.value))
+})
 
 const isFiniteNumber = (value: number): boolean => Number.isFinite(value);
 
@@ -87,6 +200,36 @@ watch(
 watch(
   () => [newSell.value.price, newSell.value.amount, newSell.value.totalPrice],
   () => syncTradeValues(newSell.value, lastSellEdited.value)
+)
+
+watch(
+  () => [newBuy.value.location, newBuy.value.commodity, buyCommodityTerminals.value],
+  () => {
+    if (!newBuy.value.location || !newBuy.value.commodity) return
+
+    const row = buyCommodityTerminals.value.find(
+      (item) => item.commodity_code === newBuy.value.commodity
+    )
+    if (!row || row.price_buy <= 0) return
+
+    lastBuyEdited.value = 'price'
+    setIfChanged(newBuy.value, 'price', row.price_buy)
+  }
+)
+
+watch(
+  () => [newSell.value.location, newSell.value.commodity, sellCommodityTerminals.value],
+  () => {
+    if (!newSell.value.location || !newSell.value.commodity) return
+
+    const row = sellCommodityTerminals.value.find(
+      (item) => item.commodity_code === newSell.value.commodity
+    )
+    if (!row || row.price_sell <= 0) return
+
+    lastSellEdited.value = 'price'
+    setIfChanged(newSell.value, 'price', row.price_sell)
+  }
 )
 
 const addBuy = () => {
@@ -184,29 +327,43 @@ defineEmits(['deleteTour']);
       <form class="flex gap-2 mb-2" @submit.prevent="addBuy()">
         <div class="item flex flex-col">
           <label for="location">Location</label>
-          <input name="location" v-model="newBuy.location" placeholder="Location" class="border p-1" size="10"/>
+          <DropDownInputField
+            name="buy-location"
+            :dropdown-value="newBuy.location"
+            :options="locationOptions"
+            placeholder="Location"
+            @update="(newValue) => newBuy.location = newValue || ''"
+            class="border p-1 max-w-34 h-9"
+          />
         </div>
         <div class="item flex flex-col">
           <label for="commodity">Commodity</label>
-          <DropDownInputField name="commodity" :value="newBuy.commodity" placeholder="Commodity" @update="(newValue) => newBuy.commodity = newValue" class="border p-1 max-w-34"/>
+          <DropDownInputField
+            name="buy-commodity"
+            :dropdown-value="newBuy.commodity"
+            :options="buyCommodityOptions"
+            placeholder="Commodity"
+            @update="(newValue) => newBuy.commodity = newValue || ''"
+            class="border p-1 max-w-34 h-9"
+          />
         </div>
         <div class="item flex flex-col">
           <label for="scu_amount">SCUs</label>
           <input name="scu_amount" v-model.number="newBuy.amount" placeholder="SCUs" type="number"
             @input="lastBuyEdited = 'amount'"
-            class="border p-1 w-20" />
+            class="border p-1 w-20 h-9" />
         </div>
         <div class="item flex flex-col">
           <label for="price_scu">aUEC/SCU</label>
-          <input name="price_scu" v-model.number="newBuy.price" placeholder="Price / SCU" type="number"
+          <input name="price_scu" v-model.number="newBuy.price" placeholder="Price / SCU" type="number" step="0.01"
             @input="lastBuyEdited = 'price'"
-            class="border p-1 w-28" />
+            class="border p-1 w-28 h-9" />
         </div>
         <div class="item flex flex-col">
           <label for="price_scu">aUEC Total</label>
-          <input name="price_scu" v-model.number="newBuy.totalPrice" placeholder="Price / SCU" type="number"
+          <input name="price_scu" v-model.number="newBuy.totalPrice" placeholder="Price / SCU" type="number" step="0.01"
             @input="lastBuyEdited = 'totalPrice'"
-            class="border p-1 w-28" />
+            class="border p-1 w-28 h-9" />
         </div>
         <button @click="addBuy()" class="border px-2 min-w-20 ml-auto">+</button>
       </form>
@@ -249,29 +406,43 @@ defineEmits(['deleteTour']);
       <form class="flex gap-2 mb-2" @submit.prevent="addSell()">
         <div class="item flex flex-col">
           <label for="location">Location</label>
-          <input name="location" v-model="newSell.location" placeholder="Location" class="border p-1" size="10" />
+          <DropDownInputField
+            name="sell-location"
+            :dropdown-value="newSell.location"
+            :options="locationOptions"
+            placeholder="Location"
+            @update="(newValue) => newSell.location = newValue || ''"
+            class="border p-1 max-w-34 h-9"
+          />
         </div>
         <div class="item flex flex-col">
           <label for="commodity">Commodity</label>
-          <DropDownInputField name="commodity" :value="newSell.commodity" placeholder="Commodity" @update="(newValue) => newSell.commodity = newValue" class="border p-1 max-w-34"/>
+          <DropDownInputField
+            name="sell-commodity"
+            :dropdown-value="newSell.commodity"
+            :options="sellCommodityOptions"
+            placeholder="Commodity"
+            @update="(newValue) => newSell.commodity = newValue || ''"
+            class="border p-1 max-w-34 h-9"
+          />
         </div>
         <div class="item flex flex-col">
           <label for="scu_amount">SCUs</label>
           <input name="scu_amount" v-model.number="newSell.amount" placeholder="SCUs" type="number"
             @input="lastSellEdited = 'amount'"
-            class="border p-1 w-20" />
+            class="border p-1 w-20 h-9" />
         </div>
         <div class="item flex flex-col">
           <label for="price_scu">aUEC/SCU</label>
-          <input name="price_scu" v-model.number="newSell.price" placeholder="aUEC/SCU" type="number"
+          <input name="price_scu" v-model.number="newSell.price" placeholder="aUEC/SCU" type="number" step="0.01"
             @input="lastSellEdited = 'price'"
-            class="border p-1 w-28" />
+            class="border p-1 w-28 h-9" />
         </div>
         <div class="item flex flex-col">
           <label for="price_scu">aUEC Total</label>
-          <input name="price_scu" v-model.number="newSell.totalPrice" placeholder="aUEC Total" type="number"
+          <input name="price_scu" v-model.number="newSell.totalPrice" placeholder="aUEC Total" type="number" step="0.01"
             @input="lastSellEdited = 'totalPrice'"
-            class="border p-1 w-28" />
+            class="border p-1 w-28 h-9" />
         </div>
         <button @click="addSell()" class="border px-2 min-w-20 ml-auto">+</button>
       </form>

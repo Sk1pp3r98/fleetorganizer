@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const route = useRoute()
+import type { GetCommoditiesOkResponse, GetTerminalsOkResponse } from '~/utils/types/uex'
 
 useHead(() => ({
   titleTemplate: (titleChunk) => {
@@ -7,15 +7,18 @@ useHead(() => ({
   },
 }))
 
-async function getCommodities () {
-  const res = await $fetch('https://api.uexcorp.uk/2.0/commodities', {
-    method: 'GET',
-  })
-  return res;
-}
+const { data: commodityData } = await useFetch<GetCommoditiesOkResponse>('https://api.uexcorp.uk/2.0/commodities', {
+  method: 'GET',
+})
 
-const commodities = await getCommodities();
+const { data: terminalsData } = await useFetch<GetTerminalsOkResponse>('https://api.uexcorp.uk/2.0/terminals?type=commodity', {
+  method: 'GET',
+})
+
+const commodities = computed(() => commodityData.value?.data ?? [])
+const terminals = computed(() => terminalsData.value?.data ?? [])
 provide('commodities', commodities)
+provide('terminals', terminals)
 </script>
 <template>
   <NuxtLayout>
