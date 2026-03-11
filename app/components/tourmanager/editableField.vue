@@ -23,7 +23,7 @@ const handleSubmit = (value: string) => {
 </script>
 
 <template>
-  <div v-show="!editOpen" @click="openEdit()">
+  <div class="break-all" v-show="!editOpen" @click="openEdit()">
     {{ value }}
   </div>
   <input
@@ -33,7 +33,7 @@ const handleSubmit = (value: string) => {
     @keyup.enter="handleSubmit(($event?.target as HTMLInputElement).value)"
     @blur="handleSubmit(($event?.target as HTMLInputElement).value)"
     :type="type === 'number' ? 'number' : undefined"
-    class="border w-full field-sizing-content"
+    class="border w-full lg:field-sizing-content max-w-full"
     :size="size ?? 10"
     />
 </template>
