@@ -309,8 +309,8 @@ defineEmits(['deleteTour']);
 
 <template>
 <div class="flex justify-between items-center">
-  <div class="flex flex-row gap-2 items-center">
-    <h2 class="text-lg font-bold hover:cursor-pointer">
+  <div class="flex flex-col lg:flex-row gap-2 items-start lg:items-center">
+    <h2 class="text-lg font-bold hover:cursor-pointer max-w-full">
       <EditableField :value="tour.name" @change="(e) => tour.name = e" size="undefined" type="string" />
     </h2>
 
@@ -321,10 +321,11 @@ defineEmits(['deleteTour']);
 </div>
 
 <div v-show="tour.show" class="tour-wrapper">
-  <div class="grid grid-cols-2 gap-4">
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+    <!-- BUY-DIV -->
     <div class="buy-div">
       <h3 class="font-semibold">Buy</h3>
-      <form class="flex gap-2 mb-2" @submit.prevent="addBuy()">
+      <form class="flex flex-col lg:flex-row flex-wrap gap-x-2 gap-y-6 mb-2" @submit.prevent="addBuy()">
         <div class="item flex flex-col">
           <label for="location">Location</label>
           <DropDownInputField name="buy-location" :dropdown-value="newBuy.location" :options="locationOptions"
@@ -345,17 +346,17 @@ defineEmits(['deleteTour']);
         <div class="item flex flex-col">
           <label for="price_scu">aUEC/SCU</label>
           <input name="price_scu" v-model.number="newBuy.price" placeholder="Price / SCU" type="number" step="0.01"
-            @input="lastBuyEdited = 'price'" class="border p-1 w-28 h-9" />
+            @input="lastBuyEdited = 'price'" class="border p-1 w-24 h-9" />
         </div>
         <div class="item flex flex-col">
           <label for="price_scu">aUEC Total</label>
           <input name="price_scu" v-model.number="newBuy.totalPrice" placeholder="Price / SCU" type="number" step="0.01"
-            @input="lastBuyEdited = 'totalPrice'" class="border p-1 w-28 h-9" />
+            @input="lastBuyEdited = 'totalPrice'" class="border p-1 w-24 h-9" />
         </div>
-        <button @click="addBuy()" class="border px-2 min-w-20 ml-auto">+</button>
+        <button @click="addBuy()" class="border px-2 min-w-20 min-h-10 lg:ml-auto">+</button>
       </form>
 
-      <table class="w-full border text-sm">
+      <table class="w-full block md:table overflow-x-auto border text-sm">
         <thead class="text-left">
           <tr>
             <th>Location</th>
@@ -388,9 +389,10 @@ defineEmits(['deleteTour']);
       </table>
     </div>
 
+    <!-- SELL-DIV -->
     <div class="sell-div">
       <h3 class="font-semibold">Sell</h3>
-      <form class="flex gap-2 mb-2" @submit.prevent="addSell()">
+      <form class="flex flex-col lg:flex-row flex-wrap gap-x-2 gap-y-6 mb-2" @submit.prevent="addSell()">
         <div class="item flex flex-col">
           <label for="location">Location</label>
           <DropDownInputField name="sell-location" :dropdown-value="newSell.location" :options="locationOptions"
@@ -411,17 +413,17 @@ defineEmits(['deleteTour']);
         <div class="item flex flex-col">
           <label for="price_scu">aUEC/SCU</label>
           <input name="price_scu" v-model.number="newSell.price" placeholder="aUEC/SCU" type="number" step="0.01"
-            @input="lastSellEdited = 'price'" class="border p-1 w-28 h-9" />
+            @input="lastSellEdited = 'price'" class="border p-1 w-24 h-9" />
         </div>
         <div class="item flex flex-col">
           <label for="price_scu">aUEC Total</label>
           <input name="price_scu" v-model.number="newSell.totalPrice" placeholder="aUEC Total" type="number" step="0.01"
-            @input="lastSellEdited = 'totalPrice'" class="border p-1 w-28 h-9" />
+            @input="lastSellEdited = 'totalPrice'" class="border p-1 w-24 h-9" />
         </div>
-        <button @click="addSell()" class="border px-2 min-w-20 ml-auto">+</button>
+        <button @click="addSell()" class="border px-2 min-w-20 min-h-10 lg:ml-auto">+</button>
       </form>
 
-      <table class="w-full border text-sm">
+      <table class="w-full block md:table overflow-x-auto border text-sm">
         <thead class="text-left">
           <tr>
             <th>Location</th>
@@ -458,7 +460,7 @@ defineEmits(['deleteTour']);
   <div class="cost-div mt-3" v-if="tour.costs?.length > 0">
     <h3 class="font-semibold">Cost</h3>
 
-    <table class="w-full border text-sm">
+    <table class="w-full block md:table overflow-x-auto border text-sm">
       <thead class="text-left">
         <tr>
           <th>Location</th>
@@ -487,13 +489,13 @@ defineEmits(['deleteTour']);
 
   <div class="border-y my-4 py-4 flex flex-row justify-between items-center">
     <div class="flex flex-col gap-2">
-      <div class="font-semibold border-dotted border-b-1">On Board</div>
+      <div class="font-semibold border-dotted border-b">On Board</div>
       <template v-for="(amount, commodity, index) in onboard()" :key="commodity">
         <hr v-if="index > 0" />
         <div class="flex gap-2 items-center">
           <template v-if="amount > 0">
             <span>{{ commodity }}: {{ amount }} SCU</span>
-            <button class="border px-2" @click="openSellModal(commodity, amount)">
+            <button class="border ml-auto px-2" @click="openSellModal(commodity, amount)">
               Sell
             </button>
           </template>
